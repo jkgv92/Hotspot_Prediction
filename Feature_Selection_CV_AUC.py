@@ -192,16 +192,14 @@ for train_index, test_index in loo_test.split(np.squeeze(Xn[:, 0, :]), y):
 
     '''Selección de caracteristicas'''
 
-    # rel_MI = SelectKBest(score_func=score_func, k=num_features)
-    # Xtrain = rel_MI.fit_transform(Xtrain, ytrain)
-    # Xtest = rel_MI.transform(Xtest)
-    # rel_MI_support = rel_MI.get_support()
-    # rel_MI_feature = X_frame.loc[:, rel_MI_support].columns.tolist()
-    # rel_MI_scores = rel_MI.scores_[rel_MI_support].tolist()
-    # feature_selection_df = pd.DataFrame({'Feature': rel_MI_feature, 'Score':rel_MI_scores})
+    rel_MI = SelectKBest(score_func=score_func, k=num_features)
+    Xtrain = rel_MI.fit_transform(Xtrain, ytrain)
+    Xtest = rel_MI.transform(Xtest)
+    rel_MI_support = rel_MI.get_support()
+    rel_MI_feature = X_frame.loc[:, rel_MI_support].columns.tolist()
+    rel_MI_scores = rel_MI.scores_[rel_MI_support].tolist()
+    feature_selection_df = pd.DataFrame({'Feature': rel_MI_feature, 'Score':rel_MI_scores})
 
-    Xtrain = Xtrain[:, [71, 83, 88, 70, 89, 56, 86, 53, 58, 59, 29, 28, 69, 41, 74, 23, 87]]
-    Xtest = Xtest[:, [71, 83, 88, 70, 89, 56, 86, 53, 58, 59, 29, 28, 69, 41, 74, 23, 87]]
 
     '''  
     SVM  
@@ -262,10 +260,6 @@ for train_index, test_index in loo_test.split(np.squeeze(Xn[:, 0, :]), y):
     '''  
     RF 
     '''
-
-    # RF = RandomForestClassifier(n_estimators=1000, bootstrap=True, class_weight='balanced')
-    # RF.fit(Xtrain, ytrain)
-    # rf_y_pred = RF.predict(Xtest)
 
     '''Optimización RF'''
     tpot_classifier = TPOTClassifier(generations=5, population_size=24, offspring_size=12,
@@ -365,8 +359,8 @@ plt.savefig('Graphs/ROC_AUC_RF.png', dpi=300)
 
 '''Print de metricas'''
 print('------------------------')
-# print('Caracteristicas seleccionadas')
-# print(feature_selection_df)
+print('Caracteristicas seleccionadas')
+print(feature_selection_df)
 print('------------------------')
 print('F1 Support Vector', np.mean(f1_test_svm))
 print('Accuracy Support Vector', np.mean(acc_test_svm))
